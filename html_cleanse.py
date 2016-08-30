@@ -23,6 +23,10 @@ regHyphen = re.compile('[\u2010\u2011\u2012\u2013\u2014\u23af]')
 regSmartDblQuote = re.compile('&[lr]dquo;')
 regSmartSnglQuote = re.compile('&[lr]squo;')
 regRel2Abs = re.compile('(href=\")(\/)')
+regPEmpty = re.compile('<p>[\s]*<\/p>')
+regPComment = re.compile('(<p>)[\s]*(<!--.*-->)[\s]*(<\/p>)')
+regPStrongEmpty = re.compile('<p>[\s]*<strong>[\s]*<\/strong>[\s]*<\/p>')
+# regSpan = re.compile('(<span .*>)([\s\S]*)(<\/span[\s\S]*>)')
 
 
 #%% Path-cleansing regexprs
@@ -44,30 +48,64 @@ def cleanseHTMLSoup(soupInnerHTML):
     for eachLi in soupInnerHTML.select("li > p"):
         eachLi = eachLi.unwrap()
 
+    for eachSpan in soupInnerHTML.select("span"):
+        eachSpan = eachSpan.unwrap()
+
     for eachDirAttr in soupInnerHTML.find_all(dir=True):
         del eachDirAttr['dir']
 
-#    for eachClassAttr in soupPage.find_all(hasClass):
-#        del eachClassAttr['class']
+    for eachAttr in soupInnerHTML.find_all(width=True):
+        del eachAttr['width']
+
+    for eachAttr in soupInnerHTML.find_all(height=True):
+        del eachAttr['height']
+
+    for eachAttr in soupInnerHTML.find_all(valign=True):
+        del eachAttr['valign']
+
+    for eachAttr in soupInnerHTML.find_all(cellpadding=True):
+        del eachAttr['cellpadding']
+
+    for eachAttr in soupInnerHTML.find_all(cellspacing=True):
+        del eachAttr['cellspacing']
+
+    for eachAttr in soupInnerHTML.find_all(border=True):
+        del eachAttr['border']
+
+    for eachAttr in soupInnerHTML.find_all(align=True):
+        del eachAttr['align']
+
+    # attrList = ['width', 'height', 'valign', 'cellpadding', 'cellspacing', 'border', 'align']
+    # for eachAttribute in attrList:
+    #     for eachAttr in soupInnerHTML.find_all(eachAttribute=True):
+    #         del eachAttr[eachAttr]
+
+    #    for eachClassAttr in soupPage.find_all(hasClass):
+    #        del eachClassAttr['class']
+
     return soupInnerHTML
 
 
 def cleanseHTMLStr(strSourceHTML):
-    
+
     strCleansedHTML = strSourceHTML
 
     strCleansedHTML = regDivStrip.search(strCleansedHTML).group(1)+regDivStrip.search(strCleansedHTML).group(3)+regDivStrip.search(strCleansedHTML).group(5)
     strCleansedHTML = regAnchBold.sub('\g<1>\g<2>\g<3>', strCleansedHTML)
     strCleansedHTML = regH2Bold.sub('\g<1>\g<2>\g<3>', strCleansedHTML)
+    strCleansedHTML = strCleansedHTML.replace('<br/>', '')
+    strCleansedHTML = regPEmpty.sub('', strCleansedHTML)
+    strCleansedHTML = regPComment.sub('\g<2>', strCleansedHTML)
+    strCleansedHTML = regPStrongEmpty.sub('', strCleansedHTML)
     strCleansedHTML = strCleansedHTML.strip()
 
     return strCleansedHTML
 
 
 def cleanseHTML(soupInnerHTML):
-    
+
     soupInnerHTML = cleanseHTMLSoup(soupInnerHTML)
-    
+
     strInnerHTML = cleanseHTMLStr(soupInnerHTML.prettify())
 
     return strInnerHTML
