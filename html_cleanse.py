@@ -30,6 +30,9 @@ regPStrongEmpty = re.compile('<p>[\s]*<strong>[\s]*<\/strong>[\s]*<\/p>')
 
 #%% Path-cleansing regexprs
 
+def hasClass(cssClass):
+    return cssClass is not None
+
 def cleanseHTMLSoup(soupInnerHTML):
 
     soupInnerHTML = soupInnerHTML.find("div", class_="inner-html")
@@ -57,40 +60,10 @@ def cleanseHTMLSoup(soupInnerHTML):
     for eachSpan in soupInnerHTML.select("span"):
         eachSpan = eachSpan.unwrap()
 
-    for eachDirAttr in soupInnerHTML.find_all(dir=True):
-        del eachDirAttr['dir']
-
-    for eachAttr in soupInnerHTML.find_all(width=True):
-        del eachAttr['width']
-
-    for eachAttr in soupInnerHTML.find_all(height=True):
-        del eachAttr['height']
-
-    for eachAttr in soupInnerHTML.find_all(valign=True):
-        del eachAttr['valign']
-
-    for eachAttr in soupInnerHTML.find_all(cellpadding=True):
-        del eachAttr['cellpadding']
-
-    for eachAttr in soupInnerHTML.find_all(cellspacing=True):
-        del eachAttr['cellspacing']
-
-    for eachAttr in soupInnerHTML.find_all(border=True):
-        del eachAttr['border']
-
-    for eachAttr in soupInnerHTML.find_all(align=True):
-        del eachAttr['align']
-
-    for eachAttr in soupInnerHTML.find_all(type=True):
-        del eachAttr['type']
-
-    # attrList = ['width', 'height', 'valign', 'cellpadding', 'cellspacing', 'border', 'align']
-    # for eachAttribute in attrList:
-    #     for eachAttr in soupInnerHTML.find_all(eachAttribute=True):
-    #         del eachAttr[eachAttr]
-
-    #    for eachClassAttr in soupPage.find_all(hasClass):
-    #        del eachClassAttr['class']
+    # Bulk delete most attributes
+    for tag in soupInnerHTML():
+        for attribute in ["class", "dir", "width", "height", "valign", "cellpadding", "cellspacing", "border", "align", "style"]:
+            del tag[attribute]
 
     return soupInnerHTML
 
@@ -100,8 +73,6 @@ def cleanseHTMLStr(strSourceHTML):
     strCleansedHTML = strSourceHTML
 
     strCleansedHTML = regDivStrip.search(strCleansedHTML).group(1)+regDivStrip.search(strCleansedHTML).group(3)+regDivStrip.search(strCleansedHTML).group(5)
-    # strCleansedHTML = regAnchBold.sub('\g<1>\g<2>\g<3>', strCleansedHTML)
-    # strCleansedHTML = regH2Bold.sub('\g<1>\g<2>\g<3>', strCleansedHTML)
     strCleansedHTML = strCleansedHTML.replace('<br/>', '')
     strCleansedHTML = regPEmpty.sub('', strCleansedHTML)
     strCleansedHTML = regPComment.sub('\g<2>', strCleansedHTML)
