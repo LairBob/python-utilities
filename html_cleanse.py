@@ -26,7 +26,6 @@ regRel2Abs = re.compile('(href=\")(\/)')
 regPEmpty = re.compile('<p>[\s]*<\/p>')
 regPComment = re.compile('(<p>)[\s]*(<!--.*-->)[\s]*(<\/p>)')
 regPStrongEmpty = re.compile('<p>[\s]*<strong>[\s]*<\/strong>[\s]*<\/p>')
-# regSpan = re.compile('(<span .*>)([\s\S]*)(<\/span[\s\S]*>)')
 
 
 #%% Path-cleansing regexprs
@@ -39,22 +38,11 @@ def cleanseHTMLSoup(soupInnerHTML):
         eachAnchor = eachAnchor.unwrap()
 
     for eachAnchor in soupInnerHTML.select("strong > a"):
-        print()
-        print()
-        print ("FOUND: "+str(eachAnchor.prettify()))
-#        anchorParent = eachAnchor.parent
-        print()
-        print ("PARENT: "+str(eachAnchor.parent.prettify()))
         try:
             eachAnchor.parent.unwrap()
-            print()
-            print ("FINAL: "+str(eachAnchor.prettify()))
-#            print ("PARENT: "+str(eachAnchor.parent.strong.prettify()))
-#            anchorParent.strong.decompose()
-#            print()
-#            print ("FINAL: "+str(anchorParent.prettify()))
         except:
-            print("*** ERROR")
+            print()
+            print ("*** ERROR: "+str(eachAnchor.parent.prettify()))
 
 
     for eachH2 in soupInnerHTML.select("h2 > strong"):
@@ -92,6 +80,9 @@ def cleanseHTMLSoup(soupInnerHTML):
 
     for eachAttr in soupInnerHTML.find_all(align=True):
         del eachAttr['align']
+
+    for eachAttr in soupInnerHTML.find_all(type=True):
+        del eachAttr['type']
 
     # attrList = ['width', 'height', 'valign', 'cellpadding', 'cellspacing', 'border', 'align']
     # for eachAttribute in attrList:
