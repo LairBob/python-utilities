@@ -12,7 +12,7 @@ from urllib.parse import urlparse, urlunparse
 #%% Page-cleansing regexprs
 
 regDivStrip = re.compile('^([\s\S]*)(\<div class="inner-html" id="body-content">)([\s\S]*)(\<!-- inner-html -->[\s]*\<\/div\>)([\s\S]*)$')
-regAnchBold = re.compile('(\<a .*\>)[\s\S]*\<strong>([\s\S]*)\<\/strong>[\s\S]*(\<\/a[\s\S]*>)')
+regAnchBold = re.compile('(\<a .*\>)[\s\S]*\<strong>([\s\S]*)\<\/strong>[\s\S]*(\<\/a[\s]*>)')
 regH2Bold = re.compile('(\<h2[\s\S]*\>)[\s\S]*\<strong>([\s\S]*)\<\/strong>[\s\S]*(\<\/h2[\s\S]*>)')
 
 
@@ -35,9 +35,27 @@ def cleanseHTMLSoup(soupInnerHTML):
 
     soupInnerHTML = soupInnerHTML.find("div", class_="inner-html")
 
-    # soupClean = soupPage.select("h2 strong")
     for eachAnchor in soupInnerHTML.select("a > strong"):
         eachAnchor = eachAnchor.unwrap()
+
+    for eachAnchor in soupInnerHTML.select("strong > a"):
+        print()
+        print()
+        print ("FOUND: "+str(eachAnchor.prettify()))
+#        anchorParent = eachAnchor.parent
+        print()
+        print ("PARENT: "+str(eachAnchor.parent.prettify()))
+        try:
+            eachAnchor.parent.unwrap()
+            print()
+            print ("FINAL: "+str(eachAnchor.prettify()))
+#            print ("PARENT: "+str(eachAnchor.parent.strong.prettify()))
+#            anchorParent.strong.decompose()
+#            print()
+#            print ("FINAL: "+str(anchorParent.prettify()))
+        except:
+            print("*** ERROR")
+
 
     for eachH2 in soupInnerHTML.select("h2 > strong"):
         eachH2 = eachH2.unwrap()
@@ -91,8 +109,8 @@ def cleanseHTMLStr(strSourceHTML):
     strCleansedHTML = strSourceHTML
 
     strCleansedHTML = regDivStrip.search(strCleansedHTML).group(1)+regDivStrip.search(strCleansedHTML).group(3)+regDivStrip.search(strCleansedHTML).group(5)
-    strCleansedHTML = regAnchBold.sub('\g<1>\g<2>\g<3>', strCleansedHTML)
-    strCleansedHTML = regH2Bold.sub('\g<1>\g<2>\g<3>', strCleansedHTML)
+    # strCleansedHTML = regAnchBold.sub('\g<1>\g<2>\g<3>', strCleansedHTML)
+    # strCleansedHTML = regH2Bold.sub('\g<1>\g<2>\g<3>', strCleansedHTML)
     strCleansedHTML = strCleansedHTML.replace('<br/>', '')
     strCleansedHTML = regPEmpty.sub('', strCleansedHTML)
     strCleansedHTML = regPComment.sub('\g<2>', strCleansedHTML)
