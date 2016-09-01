@@ -38,12 +38,7 @@ def cleanseHTMLSoup(soupInnerHTML):
         eachAnchor = eachAnchor.unwrap()
 
     for eachAnchor in soupInnerHTML.select("strong > a"):
-        try:
-            eachAnchor.parent.unwrap()
-        except:
-            print()
-            print ("*** ERROR: "+str(eachAnchor.parent.prettify()))
-
+        eachAnchor.parent.unwrap()
 
     for eachH2 in soupInnerHTML.select("h2 > strong"):
         eachH2 = eachH2.unwrap()
@@ -57,33 +52,37 @@ def cleanseHTMLSoup(soupInnerHTML):
     for eachSpan in soupInnerHTML.select("span"):
         eachSpan = eachSpan.unwrap()
 
-    for eachDirAttr in soupInnerHTML.find_all(dir=True):
-        del eachDirAttr['dir']
+#    for eachDirAttr in soupInnerHTML.find_all(dir=True):
+#        del eachDirAttr['dir']
+#
+#    for eachAttr in soupInnerHTML.find_all(width=True):
+#        del eachAttr['width']
+#
+#    for eachAttr in soupInnerHTML.find_all(height=True):
+#        del eachAttr['height']
+#
+#    for eachAttr in soupInnerHTML.find_all(valign=True):
+#        del eachAttr['valign']
+#
+#    for eachAttr in soupInnerHTML.find_all(cellpadding=True):
+#        del eachAttr['cellpadding']
+#
+#    for eachAttr in soupInnerHTML.find_all(cellspacing=True):
+#        del eachAttr['cellspacing']
+#
+#    for eachAttr in soupInnerHTML.find_all(border=True):
+#        del eachAttr['border']
+#
+#    for eachAttr in soupInnerHTML.find_all(align=True):
+#        del eachAttr['align']
+#
+#    for eachAttr in soupInnerHTML.find_all(type=True):
+#        del eachAttr['type']
 
-    for eachAttr in soupInnerHTML.find_all(width=True):
-        del eachAttr['width']
-
-    for eachAttr in soupInnerHTML.find_all(height=True):
-        del eachAttr['height']
-
-    for eachAttr in soupInnerHTML.find_all(valign=True):
-        del eachAttr['valign']
-
-    for eachAttr in soupInnerHTML.find_all(cellpadding=True):
-        del eachAttr['cellpadding']
-
-    for eachAttr in soupInnerHTML.find_all(cellspacing=True):
-        del eachAttr['cellspacing']
-
-    for eachAttr in soupInnerHTML.find_all(border=True):
-        del eachAttr['border']
-
-    for eachAttr in soupInnerHTML.find_all(align=True):
-        del eachAttr['align']
-
-    for eachAttr in soupInnerHTML.find_all(type=True):
-        del eachAttr['type']
-
+    for eachTag in soupInnerHTML():
+        for eachAttribute in ["class", "id", "name", "style", "dir", "width", "height", "valign", "cellpadding", "cellspacing", "border", "align", "type"]:
+            del eachTag[eachAttribute]
+    
     # attrList = ['width', 'height', 'valign', 'cellpadding', 'cellspacing', 'border', 'align']
     # for eachAttribute in attrList:
     #     for eachAttr in soupInnerHTML.find_all(eachAttribute=True):
