@@ -8,13 +8,16 @@ Created on Thu Sep  1 22:53:00 2016
 import os
 
 class clsLogger:
+
+
+#%% Class constructor
     
     def __init__( self, **logArgs ):
         
         # Create a per-instance dict to store local properties
         self._properties = {}
         self._properties[ 'root' ] = os.getcwd()
-        self._properties[ 'logPath' ] = "\\logs"
+        self._properties[ 'logPath' ] = [ "logs" ]
         self._properties[ 'logName' ] = "log-out"
         self._properties[ 'logExt' ] = ".log"
         
@@ -31,16 +34,18 @@ class clsLogger:
             else:
                 raise Exception(" UKNOWN PROPERTY: "+logArgs[ logArg ])        
  
+ 
+ #%% Property interface functions
+ 
     # Dedicated method exposed to process path property   
     def logPath( self, *args ):
         if args:
             tmpPath = args[0]
-            if tmpPath[0] != "\\":
-                tmpPath = "\\"+tmpPath
-            if tmpPath[-1] == "\\":
-                tmpPath = tmpPath[:-1]
-            self._properties[ 'logPath' ] = tmpPath
-        return self._properties[ 'logPath' ]
+            for eachSep in [ "\\", "/" ]:
+                if eachSep in tmpPath:
+                    self._properties[ 'logPath' ] = tmpPath.split( eachSep )
+                    break
+        return os.path.join( *self._properties[ 'logPath' ] )
 
     # Dedicated method exposed to process name property   
     def logName( self, *args ):
@@ -56,9 +61,24 @@ class clsLogger:
     # Dedicated method exposed to process extension property   
     def logExt( self, *args ):
         if args:
-            self._properties[ 'logExt' ] = args[0]
+            tmpExt = args[0]
+            if not tmpExt[0] == '.':
+                tmpExt = '.'+tmpExt
+            self._properties[ 'logExt' ] = tmpExt
         return self._properties[ 'logExt' ]
 
+    # Dedicated method exposed to process root path property   
+    def root( self, *args ):
+        if args:
+            tmpRoot = args[0]
+            self._properties[ 'root' ] = tmpRoot
+        return self._properties[ 'root' ]
+
+    def relPath( self ):
+        return os.path.join( self.logPath(), self.logName() )
+
+    def absPath( self ):
+        return os.path.join( self.root(), self.relPath() )
 
 
 #%% Unit tests
@@ -67,15 +87,24 @@ if __name__ == '__main__':
     
     # Path tests
     tmpLogger = clsLogger( logPath = "path", logName = "log-main" )
+
+    print ( tmpLogger.root() ) 
+    print ( tmpLogger.relPath() )
+    print ( tmpLogger.absPath() )
+    
     print ( tmpLogger.logPath() )
     print ( tmpLogger.logPath( '\\subleft' ) )
     print ( tmpLogger.logPath( '\\subboth\\' ) )
     print ( tmpLogger.logPath( 'subright\\' ) )
     print ( tmpLogger.logPath( 'subnone' ) )
-    print ( tmpLogger.logPath() )
+    print ( tmpLogger.logPath( 'subpar\\subchild' ) )
+    print ( tmpLogger.absPath() )
  
     print ( tmpLogger.logName() )
     print ( tmpLogger.logName( 'log-test' ) )
     print ( tmpLogger.logName( 'log-test.txt' ) )
+    print ( tmpLogger.logExt( '.csv' ) )
+    print ( tmpLogger.logExt( 'txt' ) )
     print ( tmpLogger.logName() )
+
    
