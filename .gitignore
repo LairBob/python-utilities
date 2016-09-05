@@ -144,3 +144,5 @@ $RECYCLE.BIN/
 # Log files
 log*/
 *.log
+*test*/
+*test*.*
