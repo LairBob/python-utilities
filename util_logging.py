@@ -17,7 +17,7 @@ class clsLogger:
     def __init__( self, **fArgs ):
 
         self._properties = {}
-        self._properties['indent'] = 0
+        self._properties['indentLevel'] = 0
         self._properties['indentSize'] = 4
 
         self._logLevel = 2
@@ -26,7 +26,7 @@ class clsLogger:
 
         self._currTime = strTimestamp
 
-        self.write( "INITIATING LOG OUTPUT: "+strTimestamp )
+        self.write( "INITIATING LOG OUTPUT: "+strTimestamp, padBefore = 2, padAfter = 3 )
 
         for fArg in fArgs:
             if fArg == 'strHeader':
@@ -39,17 +39,61 @@ class clsLogger:
             else:
                 self._properties[ fArg ] = fArgs[ fArg ]
 
-    def write(self, *args):
+
+#%% Property management functions
+
+    def indentLevel(self, *args):
         if args:
+            self._properties['indentLevel'] = args[0]
+        return self._properties['indentLevel']
+
+    def indentSize(self, *args):
+        if args:
+            self._properties['indentSize'] = args[0]
+        return self._properties['indentSize']
+
+    def indent(self):
+        indLevel = self._properties[ 'indentLevel' ]
+        indSize = self._properties[ 'indentSize' ]
+        intIndent = indLevel * indSize
+
+        return (" " * intIndent )
+
+#%% File management functions
+
+    def write(self, *args, **kwargs):
+
+        if 'indentLevel' in kwargs:
+            self.indentLevel( kwargs[ 'indentLevel' ] )
+
+        if 'indentSize' in kwargs:
+            self.indentSize( kwargs[ 'indentSize' ] )
+
+        if 'padBefore' in kwargs:
             try:
-                for n in range(args[1]):
+                for n in range(kwargs['padBefore']):
                     self._fM.write()
             except:
                 pass
-        self._fM.write( *args )
+
+        if args:
+            tmpStr = self.indent()+str(args[0])
+
+        self._fM.write( tmpStr )
+
+        if 'padAfter' in kwargs:
+            try:
+                for n in range(kwargs['padAfter']):
+                    self._fM.write()
+            except:
+                pass
 
 
-#%% File management functions
+    def _lWrite(self, myLevel, *args):
+        if args:
+            if self._logLevels[ myLevel ] > self._logLevel:
+                self.write( *args )
+
 
 
 
@@ -64,6 +108,10 @@ if __name__ == '__main__':
 
     if testBase:
         tmpLogger = clsLogger( fileName = "log-test", fileExt = "log" )
+        tmpLogger.write( 'Testing' )
+        tmpLogger.write( 'Indent 01', indentLevel = 1 )
+        tmpLogger.write( 'Indent 02', indentLevel = 2, padBefore = 1, padAfter = 2 )
+        tmpLogger.write('Testing')
 
 
 
