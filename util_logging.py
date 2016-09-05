@@ -52,9 +52,18 @@ class clsLogger:
             self._properties['indentSize'] = args[0]
         return self._properties['indentSize']
 
-    def indent(self):
-        indLevel = self._properties[ 'indentLevel' ]
-        indSize = self._properties[ 'indentSize' ]
+    def indent(self, **kwargs):
+
+        if 'myLevel' in kwargs:
+            indLevel = kwargs[ 'myLevel' ]
+        else:
+            indLevel = self._properties[ 'indentLevel' ]
+
+        if 'mySize' in kwargs:
+            indSize = kwargs[ 'mySize' ]
+        else:
+            indSize = self._properties[ 'indentSize' ]
+
         intIndent = indLevel * indSize
 
         return (" " * intIndent )
@@ -63,12 +72,6 @@ class clsLogger:
 
     def write(self, *args, **kwargs):
 
-        if 'indentLevel' in kwargs:
-            self.indentLevel( kwargs[ 'indentLevel' ] )
-
-        if 'indentSize' in kwargs:
-            self.indentSize( kwargs[ 'indentSize' ] )
-
         if 'padBefore' in kwargs:
             try:
                 for n in range(kwargs['padBefore']):
@@ -76,10 +79,20 @@ class clsLogger:
             except:
                 pass
 
+
+        if 'indentLevel' in kwargs:
+            self.indentLevel( kwargs[ 'indentLevel' ] )
+
+        if 'indentSize' in kwargs:
+            self.indentSize( kwargs[ 'indentSize' ] )
+
+        strIndent = self.indent( **kwargs )
+
         if args:
-            tmpStr = self.indent()+str(args[0])
+            tmpStr = strIndent+str(args[0])
 
         self._fM.write( tmpStr )
+
 
         if 'padAfter' in kwargs:
             try:
@@ -111,7 +124,10 @@ if __name__ == '__main__':
         tmpLogger.write( 'Testing' )
         tmpLogger.write( 'Indent 01', indentLevel = 1 )
         tmpLogger.write( 'Indent 02', indentLevel = 2, padBefore = 1, padAfter = 2 )
-        tmpLogger.write('Testing')
+        tmpLogger.write( 'Testing Level 02' )
+        tmpLogger.write( 'Testing Temp Level', myLevel = 0 )
+        tmpLogger.write( 'Testing Level 02' )
+
 
 
 
