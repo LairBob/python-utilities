@@ -140,3 +140,7 @@ $RECYCLE.BIN/
 
 # Spyder files
 *.spyder*
+
+# Log files
+log*/
+*.log
