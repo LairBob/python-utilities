@@ -28,9 +28,12 @@ class fWriter:
 #        with open(self._fM.absLoc() , self._fM.fileName(), 'w', newline='') as _fOut:
 #            _fOut.write("Test")
 
-    def write(self, strOut):
+    def write(self, *args):
 #         print("---- OUT: "+strOut)
-        self._fOut.write(strOut+'\n')
+        if args:
+            self._fOut.write(args[0]+'\n')
+        else:
+            self._fOut.write('\n')
         self._fOut.flush()
 
 
@@ -131,8 +134,8 @@ class fManager:
 
 #%% File I/O functions
 
-    def write(self, strOut):
-        self._fWriter.write( strOut )
+    def write(self, *args):
+        self._fWriter.write( *args )
 
 
 
