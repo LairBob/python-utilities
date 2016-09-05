@@ -131,9 +131,6 @@ class fManager:
 
 #%% File I/O functions
 
-    def io(self):
-        return self._fWriter
-
     def write(self, strOut):
         self._fWriter.write( strOut )
 
