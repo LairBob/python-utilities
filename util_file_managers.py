@@ -20,6 +20,7 @@ class fManager:
         self._properties['relLoc'] = { "dir" }
         self._properties['fileName'] = "new-file"
         self._properties['fileExt'] = ".txt"
+        self._isMutable = False
 
         # Traverse through any kw arguments that were passed
         for fileArg in fileArgs:
@@ -35,6 +36,8 @@ class fManager:
                     self.fileName(fileArgs[fileArg])
                 elif fileArg == "fileExt":
                     self.fileExt(fileArgs[fileArg])
+                elif fileArg == "isMutable":
+                    self._isMutable(fileArgs[fileArg])
                 else:                    
                     self._properties[fileArg] = fileArgs[fileArg]
             else:
