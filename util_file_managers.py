@@ -13,10 +13,10 @@ class fWriter:
     def __init__(self, fManager):
 
         self._fM = fManager
-        print()
-        print(" ----- Constructing fWriter -----")
-
-        print("     AbsLoc: "+self._fM.absLoc())
+#        print()
+#        print(" ----- Constructing fWriter -----")
+#
+#        print("     AbsLoc: "+self._fM.absLoc())
         if not os.path.isdir(self._fM.absLoc()):
             print("          CREATING ABSLOC")
         # Ensure that the corresponding destination directory exists
@@ -163,7 +163,7 @@ if __name__ == '__main__':
         print("relPath: "+tmpPaths.relPath())
         print("absPath: "+tmpPaths.absPath())
 
-        print("New relLoc: "+tmpPaths.relLoc( "newdir\\newsub\\" ))
+        print("New relLoc: "+tmpPaths.relLoc( "newtestdir\\newtestsub\\" ))
         print("New relPath: "+tmpPaths.relPath())
         print("New absPath: "+tmpPaths.absPath())
 
@@ -171,13 +171,13 @@ if __name__ == '__main__':
 #%% Stress tests
 
     if testStress:
-        tmpPaths = fManager(relLoc="\\logs", fileName="log-main")
+        tmpPaths = fManager(relLoc="\\test-logs", fileName="log-test")
 
-        print(tmpPaths.relLoc('\\subleft'))
-        print(tmpPaths.relLoc('\\subboth\\'))
-        print(tmpPaths.relLoc('subright\\'))
-        print(tmpPaths.relLoc('subnone'))
-        print(tmpPaths.relLoc('subpar\\subchild'))
+        print(tmpPaths.relLoc('\\test-left'))
+        print(tmpPaths.relLoc('\\test-both\\'))
+        print(tmpPaths.relLoc('test-right\\'))
+        print(tmpPaths.relLoc('test-none'))
+        print(tmpPaths.relLoc('test-parent\\test-child'))
 
         print(tmpPaths.fileName('log-test'))
         print(tmpPaths.fileName('log-test.txt'))
