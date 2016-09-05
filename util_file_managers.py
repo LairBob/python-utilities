@@ -8,6 +8,36 @@ Created on Thu Sep  1 22:53:00 2016
 import os
 
 
+class fWriter:
+
+    def __init__(self, fManager):
+
+        self._fM = fManager
+        print()
+        print(" ----- Constructing fWriter -----")
+
+        print("     AbsLoc: "+self._fM.absLoc())
+        if not os.path.isdir(self._fM.absLoc()):
+            print("          CREATING ABSLOC")
+        # Ensure that the corresponding destination directory exists
+        os.makedirs(self._fM.absLoc(), exist_ok=True)
+
+        print("     fileName: "+self._fM.fileName())
+
+        self._fOut = open(self._fM.absPath(), 'w', newline="\n")
+#        with open(self._fM.absLoc() , self._fM.fileName(), 'w', newline='') as _fOut:
+#            _fOut.write("Test")
+
+    def write(self, strOut):
+#         print("---- OUT: "+strOut)
+        self._fOut.write(strOut+'\n')
+        self._fOut.flush()
+
+
+
+
+#%% CLASS
+
 class fManager:
 
 #%% Class constructor
@@ -17,9 +47,9 @@ class fManager:
         # Create a per-instance dict to store local properties
         self._properties = {}
         self._properties['root'] = os.getcwd()
-        self._properties['relLoc'] = { "dir" }
-        self._properties['fileName'] = "new-file"
-        self._properties['fileExt'] = ".txt"
+        self._properties['relLoc'] = { "logs" }
+        self._properties['fileName'] = "log-main"
+        self._properties['fileExt'] = ".log"
         self._isMutable = False
 
         # Traverse through any kw arguments that were passed
@@ -38,15 +68,17 @@ class fManager:
                     self.fileExt(fileArgs[fileArg])
                 elif fileArg == "isMutable":
                     self._isMutable(fileArgs[fileArg])
-                else:                    
+                else:
                     self._properties[fileArg] = fileArgs[fileArg]
             else:
-                raise Exception(" UKNOWN PROPERTY: "+fileArgs[fileArg])        
- 
- 
+                raise Exception(" UKNOWN PROPERTY: "+fileArgs[fileArg])
+
+        self._fWriter = fWriter(self)
+
+
  #%% Property interface functions
- 
-    # Dedicated method exposed to process root path property   
+
+    # Dedicated method exposed to process root path property
     def root(self, *args):
         if args:
             tmpRoot = args[0]
@@ -54,7 +86,7 @@ class fManager:
             self._properties['root'] = tmpRoot
         return self._properties['root']
 
-    # Dedicated method exposed to process path property   
+    # Dedicated method exposed to process path property
     def relLoc(self, *args):
         if args:
             tmpPath = args[0]
@@ -68,7 +100,7 @@ class fManager:
     def absLoc(self):
         return os.path.join(self.root(), self.relLoc())
 
-    # Dedicated method exposed to process name property   
+    # Dedicated method exposed to process name property
     def fileName(self, *args):
         if args:
             tmpName = args[0]
@@ -80,7 +112,7 @@ class fManager:
                 self._properties['fileName'] = tmpName
         return self._properties['fileName']+self.fileExt()
 
-    # Dedicated method exposed to process extension property   
+    # Dedicated method exposed to process extension property
     def fileExt(self, *args):
         if args:
             tmpExt = args[0]
@@ -97,40 +129,64 @@ class fManager:
         return os.path.join(self.root(), self.relPath())
 
 
+#%% File I/O functions
+
+    def io(self):
+        return self._fWriter
+
+    def write(self, strOut):
+        self._fWriter.write( strOut )
+
+
 
 #%% Unit tests
 
 if __name__ == '__main__':
 
-    # Path tests
-    tmpLogger = fManager(relLoc="path\\test\\logs", fileName="log-main")
+    testPaths = False
+    testStress = False
+    testFileOut = True
 
-    print("Root: "+tmpLogger.root())
-    print("relLoc: "+tmpLogger.relLoc())
-    print("absLoc: "+tmpLogger.absLoc())
 
-    print("fileName: "+tmpLogger.fileName())
-    print("fileExt: "+tmpLogger.fileExt())
+#%% Path tests
 
-    print("relPath: "+tmpLogger.relPath())
-    print("absPath: "+tmpLogger.absPath())
+    if testPaths:
+        tmpPaths = fManager(relLoc="\\logs", fileName="log-main")
 
-    print("New relLoc: "+tmpLogger.relLoc( "newdir\\newsub\\" ))
-    print("New relPath: "+tmpLogger.relPath())
-    print("New absPath: "+tmpLogger.absPath())
+        print("Root: "+tmpPaths.root())
+        print("relLoc: "+tmpPaths.relLoc())
+        print("absLoc: "+tmpPaths.absLoc())
+
+        print("fileName: "+tmpPaths.fileName())
+        print("fileExt: "+tmpPaths.fileExt())
+
+        print("relPath: "+tmpPaths.relPath())
+        print("absPath: "+tmpPaths.absPath())
+
+        print("New relLoc: "+tmpPaths.relLoc( "newdir\\newsub\\" ))
+        print("New relPath: "+tmpPaths.relPath())
+        print("New absPath: "+tmpPaths.absPath())
+
 
 #%% Stress tests
 
-    testStress = False
-
     if testStress:
-        print(tmpLogger.relLoc('\\subleft'))
-        print(tmpLogger.relLoc('\\subboth\\'))
-        print(tmpLogger.relLoc('subright\\'))
-        print(tmpLogger.relLoc('subnone'))
-        print(tmpLogger.relLoc('subpar\\subchild'))
+        tmpPaths = fManager(relLoc="\\logs", fileName="log-main")
 
-        print(tmpLogger.fileName('log-test'))
-        print(tmpLogger.fileName('log-test.txt'))
-        print(tmpLogger.fileExt('.csv'))
-        print(tmpLogger.fileExt('txt'))
+        print(tmpPaths.relLoc('\\subleft'))
+        print(tmpPaths.relLoc('\\subboth\\'))
+        print(tmpPaths.relLoc('subright\\'))
+        print(tmpPaths.relLoc('subnone'))
+        print(tmpPaths.relLoc('subpar\\subchild'))
+
+        print(tmpPaths.fileName('log-test'))
+        print(tmpPaths.fileName('log-test.txt'))
+        print(tmpPaths.fileExt('.csv'))
+        print(tmpPaths.fileExt('txt'))
+
+
+#%% File output tests
+
+    if testFileOut:
+        tmpWriteTest = fManager()
+        tmpWriteTest.write("sadasdasd")
