@@ -20,13 +20,13 @@ class clsLogger:
         self._properties['indentLevel'] = 0
         self._properties['indentSize'] = 4
 
-        self._logLevel = 2
+        self._logLevel = 'WARNING'
 
         self._fM = fManager( **fArgs )
 
         self._currTime = strTimestamp
 
-        self.write( "INITIATING LOG OUTPUT: "+strTimestamp, padBefore = 2, padAfter = 3 )
+        self.write( "INITIATING LOG OUTPUT: "+strTimestamp, padBefore = 1, padAfter = 1 )
 
         for fArg in fArgs:
             if fArg == 'strHeader':
@@ -68,7 +68,8 @@ class clsLogger:
 
         return (" " * intIndent )
 
-#%% File management functions
+
+#%% File output functions
 
     def write(self, *args, **kwargs):
 
@@ -88,8 +89,12 @@ class clsLogger:
 
         strIndent = self.indent( **kwargs )
 
+        strPrefix = ""
+        if 'prefix' in kwargs:
+            strPrefix = kwargs[ 'prefix' ]+": "
+
         if args:
-            tmpStr = strIndent+str(args[0])
+            tmpStr = strIndent+strPrefix+str(args[0])
 
         self._fM.write( tmpStr )
 
@@ -101,12 +106,39 @@ class clsLogger:
             except:
                 pass
 
+#%% Logging level functions
 
-    def _lWrite(self, myLevel, *args):
+    def loggingLevel(self, *args):
+        # Check to see if an argument has been passed
         if args:
-            if self._logLevels[ myLevel ] > self._logLevel:
-                self.write( *args )
+            # Check to see whether the argument is in the list of 'known' logging level labels ('INFO', 'ERROR', etc.)
+            if args[0] in self._logLevels:
+                # If it is in the list, set this instance's new minimal logging threshold to the new value
+                self._logLevel = args[0]
+            else:
+                # If it's not in the list, raise and exception
+                raise Exception("ERROR: Attempt to set log level to: "+args[0])
+        return self._logLevel
 
+    def _lWrite(self, myLevel, *args, **kwargs):
+        if args:
+            if self._logLevels[ myLevel ] >= self._logLevels[ self._logLevel ]:
+                self.write( *args, **kwargs, prefix = myLevel )
+
+    def DEBUG(self, *args, **kwargs):
+        self._lWrite( 'DEBUG', *args, **kwargs )
+
+    def INFO(self, *args, **kwargs):
+        self._lWrite( 'INFO', *args, **kwargs )
+
+    def WARNING(self, *args, **kwargs):
+        self._lWrite( 'WARNING', *args, **kwargs )
+
+    def ERROR(self, *args, **kwargs):
+        self._lWrite( 'ERROR', *args, **kwargs )
+
+    def CRITICAL(self, *args, **kwargs):
+        self._lWrite( 'CRITICAL', *args, **kwargs )
 
 
 
@@ -114,7 +146,8 @@ class clsLogger:
 
 if __name__ == '__main__':
 
-    testBase = True
+    testBase = False
+    testLevels = True
     testStress = False
 
 #%% Base tests
@@ -128,7 +161,24 @@ if __name__ == '__main__':
         tmpLogger.write( 'Testing Temp Level', myLevel = 0 )
         tmpLogger.write( 'Testing Level 02' )
 
+#%% Logging level tests
 
+    if testLevels:
+        tmpLogger = clsLogger( fileName = "log-test", fileExt = "log" )
+
+        tmpLogger.DEBUG( "Test" )
+        tmpLogger.INFO( "Test" )
+        tmpLogger.WARNING( "Test" )
+        tmpLogger.ERROR( "Test" )
+        tmpLogger.CRITICAL( "Test" )
+
+        tmpLogger.write("New Threshold: "+tmpLogger.loggingLevel( 'DEBUG'), padBefore = 1, padAfter = 1 )
+
+        tmpLogger.DEBUG( "Test" )
+        tmpLogger.INFO( "Test" )
+        tmpLogger.WARNING( "Test" )
+        tmpLogger.ERROR( "Test" )
+        tmpLogger.CRITICAL( "Test" )
 
 
 #%% Stress tests
