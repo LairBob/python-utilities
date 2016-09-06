@@ -30,7 +30,7 @@ class clsLogger:
 
         self._currTime = strTimestamp
 
-        self.write( "INITIATING LOG OUTPUT: "+strTimestamp, padBefore = 1, padAfter = 1 )
+        self.write( "INITIATING LOG OUTPUT: "+strTimestamp, padBefore = 1, padAfter = 1, console = True )
 
         for fArg in fArgs:
             if fArg == 'strHeader':
@@ -123,7 +123,11 @@ class clsLogger:
             tmpStr = strIndent+strPrefix+str(args[0])
 
         self._fM.write( tmpStr )
-
+        try:
+            if kwargs[ 'console' ]:
+                print( tmpStr )
+        except:
+            pass
 
         if 'padAfter' in kwargs:
             try:
