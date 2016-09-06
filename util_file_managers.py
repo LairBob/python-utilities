@@ -40,6 +40,14 @@ class fWriter:
 #            _fOut.write("Test")
 
     def write(self, *args):
+        """
+        Output method for 'fWriter' class objects
+
+        Arguments
+        ---------
+        *args: fManager()
+            Parent fManager object
+        """
 #         print("---- OUT: "+strOut)
         if args:
             self._fOut.write(args[0]+'\n')
