@@ -56,6 +56,28 @@ class clsLogger:
             self._properties['indentSize'] = args[0]
         return self._properties['indentSize']
 
+    def indentRaise(self, *args):
+        intChange = 1
+        if args:
+            if args[0] > 0:
+                intChange = args[0]
+            else:
+                raise Exception("Attempt to raise indent level: "+args[0])
+        newLevel = self.indentLevel() + intChange
+        self.indentLevel( newLevel )
+
+    def indentLower(self, *args):
+        newLevel = 1
+        if args:
+            intChange = abs(args[0])
+            if intChange > self.indentLevel():
+                newLevel = 0
+            else:
+                newLevel = self.indentLevel() - intChange
+
+        self.indentLevel( newLevel )
+
+
     def indent(self, **kwargs):
 
         if 'myLevel' in kwargs:
