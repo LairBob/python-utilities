@@ -9,8 +9,19 @@ import os
 
 
 class fWriter:
+    """
+    Base class to manage file output -- meant to be attached to 'fManager' class objects
+    """
 
     def __init__(self, fManager):
+        """
+        Constructor for fWriter class objects
+
+        Arguments
+        ---------
+        fManager: fManager()
+            Parent fManager object
+        """
 
         self._fM = fManager
 #        print()
