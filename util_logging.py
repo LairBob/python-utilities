@@ -8,6 +8,10 @@ Created on Thu Sep  1 22:53:00 2016
 from util_file_managers import fManager
 from config_main import strTimestamp
 
+
+
+#%% Class clsLogger
+
 class clsLogger:
 
 #%% Class constructor
